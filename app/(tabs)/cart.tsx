@@ -129,7 +129,7 @@ export default function CartScreen() {
           keyExtractor={(item) => item.id}
         />
       ) : (
-        <ThemedText>Ваша корзина пуста</ThemedText>
+        <ThemedText style={styles.cartTitle}>Ваша корзина пуста</ThemedText>
       )}
       {cart.length > 0 ? (
         <ThemedText style={styles.totalPrice}>
@@ -142,7 +142,7 @@ export default function CartScreen() {
 
 const styles = StyleSheet.create({
   cartTitle: {
-    marginTop: 50,
+    marginTop: 40,
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
