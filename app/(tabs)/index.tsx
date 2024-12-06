@@ -6,6 +6,7 @@ import {
   View,
   Text,
   ScrollView,
+  Modal,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -13,11 +14,14 @@ import { useEffect, useState } from "react";
 import { Thing } from "@/interface";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/store/cartSlice";
 
 export default function HomeScreen() {
   const [popularThings, setPopularThings] = useState<Thing[]>([]);
   const [catalogThings, setCatalogThings] = useState<Thing[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedThing, setSelectedThing] = useState<Thing | null>(null);
 
   const fetchThings = async () => {
     try {
@@ -42,6 +46,29 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchThings();
   }, []);
+
+  const handleCardPress = (item: Thing) => {
+    setSelectedThing(item);
+  };
+
+  const closeModal = () => {
+    setSelectedThing(null);
+  };
+
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (item: Thing) => {
+    dispatch(
+      addToCart({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: 1,
+      })
+    );
+    alert(`${item.name} добавлен в корзину!`);
+  };
 
   return (
     <ScrollView style={styles.wrapper}>
@@ -86,13 +113,18 @@ export default function HomeScreen() {
           <FlatList
             data={popularThings}
             renderItem={({ item }) => (
-              <View style={styles.ThingCard}>
-                <Image source={{ uri: item.image }} style={styles.ThingImage} />
-                <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
-                <ThemedText style={styles.ThingPrice}>
-                  {item.price} ₽
-                </ThemedText>
-              </View>
+              <TouchableOpacity onPress={() => handleCardPress(item)}>
+                <View style={styles.ThingCard}>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.ThingImage}
+                  />
+                  <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
+                  <ThemedText style={styles.ThingPrice}>
+                    {item.price} ₽
+                  </ThemedText>
+                </View>
+              </TouchableOpacity>
             )}
             keyExtractor={(item) => item.id}
             horizontal
@@ -117,31 +149,78 @@ export default function HomeScreen() {
           <FlatList
             data={catalogThings}
             renderItem={({ item }) => (
-              <View style={styles.ThingCard}>
-                <Image source={{ uri: item.image }} style={styles.ThingImage} />
-                <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
-                <ThemedText style={styles.ThingPrice}>
-                  {item.price} ₽
-                </ThemedText>
+              <TouchableOpacity onPress={() => handleCardPress(item)}>
+                <View style={styles.ThingCard}>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.ThingImage}
+                  />
+                  <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
+                  <ThemedText style={styles.ThingPrice}>
+                    {item.price} ₽
+                  </ThemedText>
 
-                <TouchableOpacity
-                  style={styles.cartButton}
-                  onPress={() => alert("Добавлено в корзину")}
-                >
-                  <Ionicons name="cart-outline" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={styles.cartButton}
+                    onPress={() => handleAddToCart(item)}
+                  >
+                    <Ionicons name="cart-outline" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
             )}
             keyExtractor={(item) => item.id}
             numColumns={2}
           />
         )}
       </ThemedView>
+
+      <Modal
+        visible={!!selectedThing}
+        transparent
+        animationType="none"
+        onRequestClose={closeModal}
+      >
+        {selectedThing && (
+          <TouchableOpacity style={styles.overlay} onPress={closeModal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>{selectedThing?.name}</Text>
+              <Text style={styles.modalDescription}>
+                {selectedThing?.description}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    maxWidth: 300,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  modalDescription: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#555",
+  },
   cartButton: {
     backgroundColor: "#000000",
     borderRadius: 8,
@@ -201,6 +280,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "space-between",
     width: 182,
+    height: 280,
     marginRight: 10,
     marginTop: 10,
     borderRadius: 10,
