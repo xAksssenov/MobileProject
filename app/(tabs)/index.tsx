@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from "react";
 import {
-  Button,
   FlatList,
   Image,
   StyleSheet,
@@ -7,10 +7,11 @@ import {
   Text,
   ScrollView,
   Modal,
+  Switch,
+  Platform,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useEffect, useState } from "react";
 import { Thing } from "@/interface";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,6 +23,7 @@ export default function HomeScreen() {
   const [catalogThings, setCatalogThings] = useState<Thing[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedThing, setSelectedThing] = useState<Thing | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   const fetchThings = async () => {
     try {
@@ -71,9 +73,39 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView style={styles.wrapper}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.titleText}>
+    <ScrollView
+      style={[
+        styles.wrapper,
+        isDarkMode ? styles.darkBackground : styles.lightBackground,
+      ]}
+    >
+      {Platform.OS === "ios" && (
+        <View
+          style={[
+            styles.switchContainer,
+            isDarkMode ? styles.darkBackground : styles.lightBackground,
+          ]}
+        >
+          <Text style={[styles.switchText, isDarkMode && styles.darkText]}>
+            Изменение темы
+          </Text>
+          <Switch value={isDarkMode} onValueChange={setIsDarkMode} />
+        </View>
+      )}
+
+      <ThemedView
+        style={[
+          styles.titleContainer,
+          isDarkMode ? styles.darkBackground : styles.lightBackground,
+        ]}
+      >
+        <ThemedText
+          type="title"
+          style={[
+            styles.titleText,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
           Магазин одежды
         </ThemedText>
       </ThemedView>
@@ -97,30 +129,70 @@ export default function HomeScreen() {
         />
       </ScrollView>
 
-      <ThemedView style={styles.sectionContainer}>
-        <ThemedView style={styles.welcomeContainer}>
-          <ThemedText type="subtitle" style={styles.welcomeText}>
+      <ThemedView
+        style={[
+          styles.sectionContainer,
+          isDarkMode ? styles.darkBackground : styles.lightBackground,
+        ]}
+      >
+        <ThemedView
+          style={[
+            styles.welcomeContainer,
+            isDarkMode ? styles.darkBackground : styles.lightBackground,
+          ]}
+        >
+          <ThemedText
+            type="subtitle"
+            style={[
+              styles.welcomeText,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
             Самые популярные модели!
           </ThemedText>
-          <ThemedText style={styles.welcomeDescription}>
+          <ThemedText
+            style={[
+              styles.welcomeDescription,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
             Советуем ознакомиться с нашими популярными моделями ниже!
           </ThemedText>
         </ThemedView>
 
         {loading ? (
-          <Text style={styles.loadingText}>Загрузка...</Text>
+          <Text
+            style={[
+              styles.loadingText,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Загрузка...
+          </Text>
         ) : (
           <FlatList
             data={popularThings}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleCardPress(item)}>
-                <View style={styles.ThingCard}>
+                <View style={[styles.ThingCard, isDarkMode && styles.darkCard]}>
                   <Image
                     source={{ uri: item.image }}
                     style={styles.ThingImage}
                   />
-                  <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
-                  <ThemedText style={styles.ThingPrice}>
+                  <ThemedText
+                    style={[
+                      styles.ThingTitle,
+                      isDarkMode ? styles.darkText : styles.lightText,
+                    ]}
+                  >
+                    {item.name}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.ThingPrice,
+                      isDarkMode ? styles.darkText : styles.lightText,
+                    ]}
+                  >
                     {item.price} ₽
                   </ThemedText>
                 </View>
@@ -133,35 +205,75 @@ export default function HomeScreen() {
         )}
       </ThemedView>
 
-      <ThemedView style={styles.welcomeContainer}>
-        <ThemedText type="subtitle" style={styles.welcomeText}>
-          Давайте оценим весь ассортимент!
-        </ThemedText>
-        <ThemedText style={styles.welcomeDescription}>
-          Советуем ознакомиться с нашим ассортиментом полностью!
-        </ThemedText>
-      </ThemedView>
+      <ThemedView
+        style={[
+          styles.sectionContainer,
+          isDarkMode ? styles.darkBackground : styles.lightBackground,
+        ]}
+      >
+        <ThemedView
+          style={[
+            styles.welcomeContainer,
+            isDarkMode ? styles.darkBackground : styles.lightBackground,
+          ]}
+        >
+          <ThemedText
+            type="subtitle"
+            style={[
+              styles.welcomeText,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Давайте оценим весь ассортимент!
+          </ThemedText>
+          <ThemedText
+            style={[
+              styles.welcomeDescription,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Советуем ознакомиться с нашим ассортиментом полностью!
+          </ThemedText>
+        </ThemedView>
 
-      <ThemedView style={styles.sectionContainer}>
         {loading ? (
-          <Text style={styles.loadingText}>Загрузка...</Text>
+          <Text
+            style={[
+              styles.loadingText,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Загрузка...
+          </Text>
         ) : (
           <FlatList
             data={catalogThings}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleCardPress(item)}>
-                <View style={styles.ThingCard}>
+                <View style={[styles.ThingCard, isDarkMode && styles.darkCard]}>
                   <Image
                     source={{ uri: item.image }}
                     style={styles.ThingImage}
                   />
-                  <ThemedText style={styles.ThingTitle}>{item.name}</ThemedText>
-                  <ThemedText style={styles.ThingPrice}>
+                  <ThemedText
+                    style={[
+                      styles.ThingTitle,
+                      isDarkMode ? styles.darkText : styles.lightText,
+                    ]}
+                  >
+                    {item.name}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.ThingPrice,
+                      isDarkMode ? styles.darkText : styles.lightText,
+                    ]}
+                  >
                     {item.price} ₽
                   </ThemedText>
 
                   <TouchableOpacity
-                    style={styles.cartButton}
+                    style={[styles.cartButton, isDarkMode && styles.darkButton]}
                     onPress={() => handleAddToCart(item)}
                   >
                     <Ionicons name="cart-outline" size={24} color="white" />
@@ -183,9 +295,26 @@ export default function HomeScreen() {
       >
         {selectedThing && (
           <TouchableOpacity style={styles.overlay} onPress={closeModal}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>{selectedThing?.name}</Text>
-              <Text style={styles.modalDescription}>
+            <View
+              style={[
+                styles.modalContainer,
+                isDarkMode && styles.darkBackground,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.modalTitle,
+                  isDarkMode ? styles.darkText : styles.lightText,
+                ]}
+              >
+                {selectedThing?.name}
+              </Text>
+              <Text
+                style={[
+                  styles.modalDescription,
+                  isDarkMode ? styles.darkText : styles.lightText,
+                ]}
+              >
                 {selectedThing?.description}
               </Text>
             </View>
@@ -197,74 +326,65 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    maxWidth: 300,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  modalDescription: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#555",
-  },
-  cartButton: {
-    backgroundColor: "#000000",
-    borderRadius: 8,
-    padding: 10,
-    alignItems: "center",
-  },
   wrapper: {
+    flex: 1,
+  },
+  switchContainer: {
+    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
     backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  switchText: {
+    fontSize: 16,
+    color: "black",
+  },
+  lightBackground: {
+    backgroundColor: "white",
+  },
+  darkBackground: {
+    backgroundColor: "#000000",
+  },
+  lightText: {
+    color: "black",
+  },
+  darkText: {
+    color: "white",
   },
   titleContainer: {
-    marginTop: 50,
+    marginTop: 20,
     alignItems: "center",
-    backgroundColor: "white",
   },
   titleText: {
     textAlign: "center",
-    color: "white",
-    backgroundColor: "black",
-    padding: 20,
+    padding: 10,
     borderRadius: 10,
+    color: "white",
   },
   welcomeContainer: {
     marginHorizontal: 8,
     marginVertical: 8,
     padding: 12,
-    backgroundColor: "black",
     borderRadius: 10,
   },
   welcomeText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     fontSize: 18,
     marginBottom: 4,
     textAlign: "center",
   },
   welcomeDescription: {
-    color: "grey",
     textAlign: "center",
+    color: "#555",
   },
   sectionContainer: {
     marginHorizontal: 8,
     marginVertical: 8,
-    textAlign: "center",
-    backgroundColor: "white",
   },
   sliderContainer: {
     marginVertical: 20,
@@ -294,12 +414,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
   },
-  sectionTitle: {
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "black",
-    fontSize: 18,
-    marginBottom: 8,
+  darkCard: {
+    backgroundColor: "#555",
+    borderColor: "#666",
   },
   ThingImage: {
     height: 130,
@@ -310,14 +427,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 4,
     textAlign: "center",
-    color: "black",
-  },
-  ThingText: {
-    fontSize: 16,
-    fontWeight: "400",
-    marginVertical: 4,
-    textAlign: "center",
-    color: "black",
   },
   ThingPrice: {
     fontSize: 14,
@@ -325,31 +434,38 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "center",
   },
-  cartContainer: {
-    marginVertical: 20,
+  cartButton: {
+    backgroundColor: "#000",
+    borderRadius: 8,
     padding: 10,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
+    alignItems: "center",
   },
-  cartTitle: {
+  darkButton: {
+    backgroundColor: "#555",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    maxWidth: 300,
+  },
+  modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    textAlign: "center",
     marginBottom: 10,
-  },
-  cartItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  cartItemText: {
-    fontSize: 16,
-    color: "black",
-  },
-  emptyCartText: {
     textAlign: "center",
-    color: "#999",
-    fontSize: 16,
+  },
+  modalDescription: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#555",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     textAlign: "center",
